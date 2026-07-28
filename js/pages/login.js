@@ -9,6 +9,9 @@ router.register('login', async () => {
   el.innerHTML = `
     <div class="login-page">
       <div class="login-card">
+        <div class="login-logo">
+          <img src="logo/logo.png" alt="Logo" onerror="this.style.display='none'">
+        </div>
         <h1>${APP_CONFIG.APP_NAME}</h1>
         <p>Sistem Informasi Data Siswa</p>
         <div id="loginAlert"></div>

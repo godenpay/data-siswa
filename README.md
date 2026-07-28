@@ -86,6 +86,12 @@ Buat spreadsheet baru dengan nama **Data Siswa**, buat sheet-sheet berikut:
 
 ### 4. Konfigurasi Frontend
 
+### 5. Logo
+
+Letakkan file logo `logo.png` di folder `logo/`. Ukuran推荐: 64x64 px (format PNG). Logo akan tampil di navbar dan halaman login.
+
+### 6. Konfigurasi Frontend
+
 Edit `js/config.js`:
 
 ```js
@@ -95,7 +101,7 @@ const APP_CONFIG = {
 };
 ```
 
-### 5. Selesai!
+### 7. Selesai!
 
 Akses `https://username.github.io/data-siswa`
 
@@ -110,6 +116,8 @@ Akses `https://username.github.io/data-siswa`
 │   └── deploy.yml          # GitHub Actions deploy
 ├── css/
 │   └── style.css           # Styling
+├── logo/
+│   └── logo.png            ✏️ Tempat upload logo kamu
 ├── js/
 │   ├── config.js           # Konfigurasi API URL
 │   ├── api.js              # Wrapper fetch API

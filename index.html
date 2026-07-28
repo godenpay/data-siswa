@@ -10,7 +10,9 @@
   <div id="app">
     <nav id="navbar" class="navbar hidden">
       <div class="nav-container">
-        <a href="#" class="nav-brand" onclick="router.navigate('dashboard')">Data Siswa</a>
+        <a href="#" class="nav-brand" onclick="router.navigate('dashboard')">
+          <img src="logo/logo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'"> Data Siswa
+        </a>
         <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
         <div class="nav-menu" id="navMenu">
           <a href="#" onclick="router.navigate('dashboard')" data-role="all">Dashboard</a>
