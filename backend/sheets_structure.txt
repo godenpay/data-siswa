@@ -1,0 +1,65 @@
+============================================================
+STRUKTUR GOOGLE SHEETS - DATA SISWA
+============================================================
+
+Buat spreadsheet baru, lalu buat 6 sheet berikut:
+
+============================================================
+Sheet 1: Users
+============================================================
+id  | username  | password  | role       | related_id | nama
+----+-----------+-----------+------------+------------+------
+1   | admin     | admin123  | admin      |            | Administrator
+2   | 12345     | siswa123  | siswa      | 12345      | Budi Santoso
+3   | ortu001   | ortu123   | orang_tua  | 12345      | Santoso
+
+- role: admin | siswa | orang_tua
+- related_id: NIS (untuk role siswa), NIS anak (untuk role orang_tua)
+
+============================================================
+Sheet 2: Siswa
+============================================================
+id  | nis    | nama         | kelas | tempat_lahir | tanggal_lahir | alamat | nama_ayah | nama_ibu | no_telp | tahun_ajaran
+----+--------+--------------+-------+-------------+---------------+--------+-----------+----------+---------+-------------
+1   | 12345  | Budi Santoso | 7A    | Jakarta     | 2012-05-10    | Jl. A  | Pak Budi  | Bu Budi  | 081234  | 2024/2025
+
+============================================================
+Sheet 3: Kelas
+============================================================
+id  | nama_kelas | tingkat | wali_kelas
+----+------------+---------+------------
+1   | 7A         | 7       | Ibu Sari
+2   | 7B         | 7       | Pak Joko
+3   | 8A         | 8       | Ibu Dewi
+4   | 9A         | 9       | Pak Agus
+
+============================================================
+Sheet 4: Absensi
+============================================================
+id  | nis    | tanggal   | status | keterangan
+----+--------+-----------+--------+-----------
+1   | 12345  | 2024-07-01| hadir  |
+2   | 12345  | 2024-07-02| sakit  | Demam
+
+- status: hadir | sakit | izin | alpha
+
+============================================================
+Sheet 5: Nilai
+============================================================
+id  | nis    | mata_pelajaran | nilai_tugas | nilai_uts | nilai_uas | nilai_akhir | semester | tahun_ajaran
+----+--------+----------------+-------------+-----------+-----------+-------------+----------+-------------
+1   | 12345  | Matematika     | 85          | 80        | 90        | 85.5        | Ganjil   | 2024/2025
+
+- nilai_akhir = (tugas * 0.3) + (uts * 0.3) + (uas * 0.4)
+- semester: Ganjil | Genap
+
+============================================================
+Sheet 6: Ijin
+============================================================
+id  | nis    | tanggal   | jenis          | keterangan      | status     | approved_by
+----+--------+-----------+----------------+-----------------+------------+------------
+1   | 12345  | 2024-07-03| sakit          | Sakit perut     | disetujui  | Administrator
+2   | 12345  | 2024-07-04| izin           | Ada acara       | pending    |
+
+- jenis: sakit | izin | keperluan_lain
+- status: pending | disetujui | ditolak
