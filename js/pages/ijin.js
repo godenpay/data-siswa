@@ -182,7 +182,7 @@ function showIjinForm(title, data) {
 
     const res = isEdit ? await api.updateIjin(payload) : await api.addIjin(payload);
     if (res.success) { overlay.remove(); router.navigate('ijin'); }
-    else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+    else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
   });
 }
 
@@ -190,19 +190,19 @@ async function setujuiIjin(id) {
   if (!confirm('Setujui izin ini?')) return;
   const res = await api.updateIjin({ id, status: 'disetujui', approved_by: auth.getUser()?.nama || 'Admin' });
   if (res.success) router.navigate('ijin');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }
 
 async function tolakIjin(id) {
   if (!confirm('Tolak izin ini?')) return;
   const res = await api.updateIjin({ id, status: 'ditolak', approved_by: auth.getUser()?.nama || 'Admin' });
   if (res.success) router.navigate('ijin');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }
 
 async function deleteIjin(id) {
   if (!confirm('Yakin hapus izin ini?')) return;
   const res = await api.deleteIjin(id);
   if (res.success) router.navigate('ijin');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }

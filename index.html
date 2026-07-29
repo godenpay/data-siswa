@@ -2,37 +2,111 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Data Siswa</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="app">
-    <nav id="navbar" class="navbar hidden">
-      <div class="nav-container">
-        <a href="#" class="nav-brand" onclick="router.navigate('dashboard')">
-          <img src="logo/logo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'"> Data Siswa
+  <div id="app" class="app-layout">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar hidden">
+      <div class="sidebar-brand">
+        <img src="logo/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <span>Data Siswa</span>
+      </div>
+      <nav class="sidebar-nav" id="sidebarNav">
+        <div class="sidebar-section">Menu</div>
+        <a href="#" class="nav-link" onclick="router.navigate('dashboard')" data-role="all" data-page="dashboard">
+          <span class="nav-icon">&#9763;</span> Dashboard
         </a>
-        <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
-        <div class="nav-menu" id="navMenu">
-          <a href="#" onclick="router.navigate('dashboard')" data-role="all">Dashboard</a>
-          <a href="#" onclick="router.navigate('siswa')" data-role="admin">Siswa</a>
-          <a href="#" onclick="router.navigate('absensi')" data-role="admin,siswa,orang_tua">Absensi</a>
-          <a href="#" onclick="router.navigate('raport')" data-role="admin,siswa,orang_tua">Raport</a>
-          <a href="#" onclick="router.navigate('ijin')" data-role="admin,siswa,orang_tua">Izin/Sakit</a>
-          <a href="#" onclick="router.navigate('admin')" data-role="admin">Admin</a>
-          <a href="#" onclick="auth.logout()">Logout</a>
+        <a href="#" class="nav-link" onclick="router.navigate('siswa')" data-role="admin" data-page="siswa">
+          <span class="nav-icon">&#9783;</span> Siswa
+        </a>
+        <a href="#" class="nav-link" onclick="router.navigate('absensi')" data-role="admin,siswa,orang_tua" data-page="absensi">
+          <span class="nav-icon">&#9745;</span> Absensi
+        </a>
+        <a href="#" class="nav-link" onclick="router.navigate('raport')" data-role="admin,siswa,orang_tua" data-page="raport">
+          <span class="nav-icon">&#128214;</span> Raport
+        </a>
+        <a href="#" class="nav-link" onclick="router.navigate('ijin')" data-role="admin,siswa,orang_tua" data-page="ijin">
+          <span class="nav-icon">&#9997;</span> Izin / Sakit
+        </a>
+        <div class="sidebar-section">Pengaturan</div>
+        <a href="#" class="nav-link" onclick="router.navigate('admin')" data-role="admin" data-page="admin">
+          <span class="nav-icon">&#9881;</span> Admin
+        </a>
+        <a href="#" class="nav-link logout-link" onclick="auth.logout()">
+          <span class="nav-icon">&#10149;</span> Keluar
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebarUserName">Admin</div>
+            <div class="sidebar-user-role" id="sidebarUserRole">Administrator</div>
+          </div>
         </div>
       </div>
+    </aside>
+    <div class="sidebar-overlay hidden" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Main area -->
+    <div class="app-main">
+      <!-- Top navbar -->
+      <nav id="navbar" class="navbar hidden">
+        <div class="navbar-inner">
+          <div class="navbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">&#9776;</button>
+            <div class="breadcrumb" id="breadcrumb">
+              <span id="breadcrumbCurrent">Dashboard</span>
+            </div>
+          </div>
+          <div class="navbar-right">
+            <div class="nav-user" id="navUser">
+              <div class="nav-user-info">
+                <div class="nav-user-name" id="navUserName">Admin</div>
+                <div class="nav-user-role" id="navUserRole">Admin</div>
+              </div>
+              <div class="nav-user-avatar" id="navUserAvatar">A</div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Page content -->
+      <main id="main-content">
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Memuat...</p>
+        </div>
+        <div id="page-content"></div>
+      </main>
+    </div>
+
+    <!-- Bottom navigation (mobile) -->
+    <nav class="bottom-nav hidden" id="bottomNav">
+      <button class="bottom-nav-link" onclick="router.navigate('dashboard')" data-role="all" data-bn-page="dashboard">
+        <span class="nav-icon">&#9763;</span> Beranda
+      </button>
+      <button class="bottom-nav-link" onclick="router.navigate('absensi')" data-role="admin,siswa,orang_tua" data-bn-page="absensi">
+        <span class="nav-icon">&#9745;</span> Absen
+      </button>
+      <button class="bottom-nav-link" onclick="router.navigate('raport')" data-role="admin,siswa,orang_tua" data-bn-page="raport">
+        <span class="nav-icon">&#128214;</span> Nilai
+      </button>
+      <button class="bottom-nav-link" onclick="router.navigate('ijin')" data-role="admin,siswa,orang_tua" data-bn-page="ijin">
+        <span class="nav-icon">&#9997;</span> Izin
+      </button>
+      <button class="bottom-nav-link logout-bn" onclick="auth.logout()">
+        <span class="nav-icon">&#10149;</span> Keluar
+      </button>
     </nav>
-    <main id="main-content">
-      <div id="loading" class="loading hidden">
-        <div class="spinner"></div>
-        <p>Memuat...</p>
-      </div>
-      <div id="page-content"></div>
-    </main>
+
+    <!-- Toast -->
+    <div id="toastContainer" class="toast-container"></div>
   </div>
+
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>

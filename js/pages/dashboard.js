@@ -45,7 +45,7 @@ router.register('dashboard', async () => {
         <div class="card-header">
           <div class="card-title">Akses Cepat</div>
         </div>
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <div class="quick-actions">
           <a href="#" onclick="router.navigate('siswa')" class="btn btn-primary">Kelola Siswa</a>
           <a href="#" onclick="router.navigate('absensi')" class="btn btn-success">Absensi</a>
           <a href="#" onclick="router.navigate('raport')" class="btn btn-warning">Raport</a>

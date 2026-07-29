@@ -18,6 +18,7 @@ const router = {
       pageContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Memuat...</p></div>';
       try {
         await this.routes[name](params);
+        if (name !== 'login') auth.highlightNav(name);
       } catch (err) {
         pageContent.innerHTML = `<div class="alert alert-danger">Terjadi kesalahan: ${err.message}</div>`;
       }
@@ -38,7 +39,7 @@ const router = {
 };
 
 function toggleNav() {
-  document.getElementById('navMenu').classList.toggle('show');
+  document.getElementById('navMenu')?.classList.toggle('show');
 }
 
 function showLoading(show) {
@@ -47,6 +48,28 @@ function showLoading(show) {
     if (show) el.classList.remove('hidden');
     else el.classList.add('hidden');
   }
+}
+
+/* Toast notification */
+function showToast(message, type = 'info', duration = 4000) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const icons = { success: '&#10003;', error: '&#10007;', warning: '&#9888;', info: '&#8505;' };
+
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + type;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type] || icons.info}</span>
+    <span class="toast-content">${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('toast-out');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
 }
 
 function formatDate(dateStr) {

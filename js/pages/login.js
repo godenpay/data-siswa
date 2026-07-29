@@ -3,7 +3,7 @@ router.register('login', async () => {
     router.navigate('dashboard');
     return;
   }
-  auth.hideNav();
+  auth.hideAll();
 
   const el = document.getElementById('page-content');
   el.innerHTML = `
@@ -13,7 +13,7 @@ router.register('login', async () => {
           <img src="logo/logo.png" alt="Logo" onerror="this.style.display='none'">
         </div>
         <h1>${APP_CONFIG.APP_NAME}</h1>
-        <p>Sistem Informasi Data Siswa</p>
+        <p class="login-subtitle">Sistem Informasi Data Siswa</p>
         <div id="loginAlert"></div>
         <form id="loginForm">
           <div class="form-group">
@@ -24,7 +24,7 @@ router.register('login', async () => {
             <label>Password</label>
             <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan password" required>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%">Masuk</button>
+          <button type="submit" class="btn btn-primary">Masuk</button>
         </form>
       </div>
     </div>`;

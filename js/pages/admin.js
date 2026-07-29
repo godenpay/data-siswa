@@ -142,7 +142,7 @@ function showUserForm(title, data) {
 
     const res = isEdit ? await api.updateUser(payload) : await api.addUser(payload);
     if (res.success) { overlay.remove(); router.navigate('admin'); }
-    else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+    else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
   });
 }
 
@@ -150,7 +150,7 @@ async function deleteUser(id) {
   if (!confirm('Yakin hapus pengguna ini?')) return;
   const res = await api.deleteUser(id);
   if (res.success) router.navigate('admin');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }
 
 /* Kelas CRUD */
@@ -208,7 +208,7 @@ function showKelasForm(title, data) {
 
     const res = isEdit ? await api.updateKelas(payload) : await api.addKelas(payload);
     if (res.success) { overlay.remove(); router.navigate('admin'); }
-    else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+    else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
   });
 }
 
@@ -216,5 +216,5 @@ async function deleteKelas(id) {
   if (!confirm('Yakin hapus kelas ini?')) return;
   const res = await api.deleteKelas(id);
   if (res.success) router.navigate('admin');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }

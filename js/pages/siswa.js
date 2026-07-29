@@ -165,7 +165,7 @@ function showSiswaForm(title, data) {
       overlay.remove();
       router.navigate('siswa');
     } else {
-      alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+      showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
     }
   });
 }
@@ -174,5 +174,5 @@ async function deleteSiswa(nis) {
   if (!confirm('Yakin hapus siswa dengan NIS ' + nis + '?')) return;
   const res = await api.deleteSiswa(nis);
   if (res.success) router.navigate('siswa');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }

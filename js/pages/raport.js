@@ -204,7 +204,7 @@ function showNilaiForm(title, data) {
 
     const res = isEdit ? await api.updateNilai(payload) : await api.addNilai(payload);
     if (res.success) { overlay.remove(); router.navigate('raport'); }
-    else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+    else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
   });
 }
 
@@ -212,5 +212,5 @@ async function deleteNilai(id) {
   if (!confirm('Yakin hapus nilai ini?')) return;
   const res = await api.deleteNilai(id);
   if (res.success) router.navigate('raport');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }

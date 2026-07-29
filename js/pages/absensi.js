@@ -162,7 +162,7 @@ function showAbsensiForm(title, data) {
 
     const res = isEdit ? await api.updateAbsensi(payload) : await api.addAbsensi(payload);
     if (res.success) { overlay.remove(); router.navigate('absensi'); }
-    else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+    else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
   });
 }
 
@@ -170,5 +170,5 @@ async function deleteAbsensi(id) {
   if (!confirm('Yakin hapus data absensi ini?')) return;
   const res = await api.deleteAbsensi(id);
   if (res.success) router.navigate('absensi');
-  else alert('Gagal: ' + (res.message || 'Terjadi kesalahan'));
+  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }
