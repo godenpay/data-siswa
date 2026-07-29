@@ -1,178 +1,102 @@
-let siswaData = [];
+let siswaDT = null;
 
 router.register('siswa', async () => {
   if (!auth.hasRole('admin')) { router.navigate('dashboard'); return; }
 
-  const res = await api.getSiswa();
-  siswaData = res.data || [];
+  const res = await siswaService.getAll();
+  const data = res.data || [];
 
-  renderSiswaPage();
-});
-
-function renderSiswaPage() {
   const el = document.getElementById('page-content');
-  let rows = '';
-  siswaData.forEach(s => {
-    rows += `<tr>
-      <td>${escapeHtml(s.nis)}</td>
-      <td>${escapeHtml(s.nama)}</td>
-      <td>${escapeHtml(s.kelas)}</td>
-      <td>${escapeHtml(s.tempat_lahir)}</td>
-      <td>${formatDate(s.tanggal_lahir)}</td>
-      <td>${escapeHtml(s.no_telp || '-')}</td>
-      <td>
-        <div class="action-btns">
-          <button class="btn btn-sm btn-warning" onclick="editSiswa('${escapeHtml(s.nis)}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteSiswa('${escapeHtml(s.nis)}')">Hapus</button>
-        </div>
-      </td>
-    </tr>`;
-  });
-
   el.innerHTML = `
     <div class="card">
       <div class="card-header">
         <div class="card-title">Data Siswa</div>
-        <button class="btn btn-primary" onclick="showAddSiswa()">+ Tambah Siswa</button>
+        <button class="btn btn-primary" onclick="siswaAdd()">+ Tambah Siswa</button>
       </div>
-      <div class="search-box">
-        <input type="text" class="form-control" id="siswaSearch" placeholder="Cari NIS atau Nama..." oninput="filterSiswa()">
-      </div>
-      <div class="table-container">
-        <table>
-          <thead><tr>
-            <th>NIS</th><th>Nama</th><th>Kelas</th><th>Tempat Lahir</th><th>Tgl Lahir</th><th>No Telp</th><th>Aksi</th>
-          </tr></thead>
-          <tbody id="siswaTableBody">${rows || '<tr><td colspan="7" style="text-align:center">Belum ada data</td></tr>'}</tbody>
-        </table>
-      </div>
+      <div id="siswaTableContainer"></div>
     </div>`;
+
+  const container = document.getElementById('siswaTableContainer');
+  siswaDT = new DataTable({
+    id: 'dt_siswa',
+    container,
+    data,
+    pageSize: 25,
+    selectable: true,
+    exportable: true,
+    columns: [
+      { key: 'nis', label: 'NIS', width: '100px', sortable: true },
+      { key: 'nama', label: 'Nama', sortable: true },
+      { key: 'kelas', label: 'Kelas', width: '80px', sortable: true },
+      { key: 'tempat_lahir', label: 'Tempat Lahir' },
+      { key: 'tanggal_lahir', label: 'Tgl Lahir', render: (v) => formatDate(v) },
+      { key: 'no_telp', label: 'No Telp' },
+      { key: 'tahun_ajaran', label: 'Thn Ajaran' },
+    ],
+    actions: [
+      { key: 'edit', label: 'Edit', cls: 'btn-warning', handler: (row) => siswaEdit(row.nis) },
+      { key: 'del', label: 'Hapus', cls: 'btn-danger', handler: async (row) => {
+        if (await Modal.confirm('Yakin hapus siswa <b>' + escapeHtml(row.nama) + '</b> (NIS: ' + row.nis + ')?')) {
+          const r = await siswaService.remove(row.nis);
+          if (r.success) { showToast('Siswa berhasil dihapus', 'success'); await siswaReload(); }
+          else showToast('Gagal: ' + (r.message || ''), 'error');
+        }
+      }},
+    ],
+    bulkActions: [
+      { key: 'export_selected', label: 'Export Terpilih', cls: 'btn-outline', handler: (rows) => {
+        exportCSV(rows, [
+          { key: 'nis', label: 'NIS' }, { key: 'nama', label: 'Nama' },
+          { key: 'kelas', label: 'Kelas' }, { key: 'tempat_lahir', label: 'Tempat Lahir' },
+          { key: 'tanggal_lahir', label: 'Tgl Lahir' }, { key: 'no_telp', label: 'No Telp' },
+        ], 'siswa_terpilih');
+      }},
+    ],
+    onRowClick: (row) => siswaEdit(row.nis),
+  });
+});
+
+async function siswaReload() {
+  const res = await siswaService.getAll();
+  if (siswaDT) siswaDT.setData(res.data || []);
 }
 
-function filterSiswa() {
-  const q = document.getElementById('siswaSearch').value.toLowerCase();
-  const filtered = siswaData.filter(s =>
-    s.nis.toLowerCase().includes(q) || s.nama.toLowerCase().includes(q)
-  );
-  const tbody = document.getElementById('siswaTableBody');
-  if (!tbody) return;
-  tbody.innerHTML = filtered.map(s => `<tr>
-    <td>${escapeHtml(s.nis)}</td>
-    <td>${escapeHtml(s.nama)}</td>
-    <td>${escapeHtml(s.kelas)}</td>
-    <td>${escapeHtml(s.tempat_lahir)}</td>
-    <td>${formatDate(s.tanggal_lahir)}</td>
-    <td>${escapeHtml(s.no_telp || '-')}</td>
-    <td>
-      <div class="action-btns">
-        <button class="btn btn-sm btn-warning" onclick="editSiswa('${escapeHtml(s.nis)}')">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteSiswa('${escapeHtml(s.nis)}')">Hapus</button>
-      </div>
-    </td>
-  </tr>`).join('');
+function siswaAdd() {
+  siswaForm('Tambah Siswa', {});
 }
 
-function showAddSiswa() {
-  showSiswaForm('Tambah Siswa', {});
+function siswaEdit(nis) {
+  const data = siswaDT ? siswaDT.filteredData.find(r => r.nis === nis) : null;
+  if (data) siswaForm('Edit Siswa', data);
 }
 
-function editSiswa(nis) {
-  const s = siswaData.find(x => x.nis === nis);
-  if (s) showSiswaForm('Edit Siswa', s);
-}
-
-function showSiswaForm(title, data) {
+async function siswaForm(title, data) {
   const isEdit = !!data.nis;
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.innerHTML = `
-    <div class="modal">
-      <div class="modal-title">${title}</div>
-      <form id="siswaForm">
-        <div class="form-row">
-          <div class="form-group">
-            <label>NIS</label>
-            <input type="text" class="form-control" id="f_nis" value="${escapeHtml(data.nis || '')}" ${isEdit ? 'readonly' : ''} required>
-          </div>
-          <div class="form-group">
-            <label>Nama Lengkap</label>
-            <input type="text" class="form-control" id="f_nama" value="${escapeHtml(data.nama || '')}" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kelas</label>
-            <input type="text" class="form-control" id="f_kelas" value="${escapeHtml(data.kelas || '')}" placeholder="Contoh: 7A" required>
-          </div>
-          <div class="form-group">
-            <label>Tahun Ajaran</label>
-            <input type="text" class="form-control" id="f_tahun" value="${escapeHtml(data.tahun_ajaran || new Date().getFullYear() + '/' + (new Date().getFullYear()+1))}" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Tempat Lahir</label>
-            <input type="text" class="form-control" id="f_tempat" value="${escapeHtml(data.tempat_lahir || '')}">
-          </div>
-          <div class="form-group">
-            <label>Tanggal Lahir</label>
-            <input type="date" class="form-control" id="f_tgl_lahir" value="${formatDateShort(data.tanggal_lahir) || ''}">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Alamat</label>
-          <textarea class="form-control" id="f_alamat" rows="2">${escapeHtml(data.alamat || '')}</textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nama Ayah</label>
-            <input type="text" class="form-control" id="f_ayah" value="${escapeHtml(data.nama_ayah || '')}">
-          </div>
-          <div class="form-group">
-            <label>Nama Ibu</label>
-            <input type="text" class="form-control" id="f_ibu" value="${escapeHtml(data.nama_ibu || '')}">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>No Telepon</label>
-          <input type="text" class="form-control" id="f_notelp" value="${escapeHtml(data.no_telp || '')}">
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">Batal</button>
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </form>
-    </div>`;
-  document.body.appendChild(overlay);
+  const fields = [
+    { key: 'nis', label: 'NIS', type: 'text', value: data.nis || '', required: true, placeholder: 'Nomor Induk Siswa' },
+    { key: 'nama', label: 'Nama Lengkap', type: 'text', value: data.nama || '', required: true, placeholder: 'Nama lengkap siswa' },
+    { key: 'kelas', label: 'Kelas', type: 'text', value: data.kelas || '', required: true, placeholder: 'Contoh: 7A' },
+    { key: 'tempat_lahir', label: 'Tempat Lahir', type: 'text', value: data.tempat_lahir || '', placeholder: 'Kota kelahiran' },
+    { key: 'tanggal_lahir', label: 'Tanggal Lahir', type: 'date', value: formatDateShort(data.tanggal_lahir), placeholder: '' },
+    { key: 'alamat', label: 'Alamat', type: 'textarea', value: data.alamat || '', placeholder: 'Alamat lengkap' },
+    { key: 'nama_ayah', label: 'Nama Ayah', type: 'text', value: data.nama_ayah || '', placeholder: 'Nama ayah' },
+    { key: 'nama_ibu', label: 'Nama Ibu', type: 'text', value: data.nama_ibu || '', placeholder: 'Nama ibu' },
+    { key: 'no_telp', label: 'No Telepon', type: 'text', value: data.no_telp || '', placeholder: 'Nomor telepon' },
+    { key: 'tahun_ajaran', label: 'Tahun Ajaran', type: 'text', value: data.tahun_ajaran || getCurrentYear(), placeholder: 'Contoh: 2024/2025' },
+  ];
 
-  document.getElementById('siswaForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const payload = {
-      nis: document.getElementById('f_nis').value.trim(),
-      nama: document.getElementById('f_nama').value.trim(),
-      kelas: document.getElementById('f_kelas').value.trim(),
-      tempat_lahir: document.getElementById('f_tempat').value.trim(),
-      tanggal_lahir: document.getElementById('f_tgl_lahir').value,
-      alamat: document.getElementById('f_alamat').value.trim(),
-      nama_ayah: document.getElementById('f_ayah').value.trim(),
-      nama_ibu: document.getElementById('f_ibu').value.trim(),
-      no_telp: document.getElementById('f_notelp').value.trim(),
-      tahun_ajaran: document.getElementById('f_tahun').value.trim(),
-    };
+  if (isEdit) fields[0].readonly = true;
 
-    const res = isEdit ? await api.updateSiswa(payload) : await api.addSiswa(payload);
-    if (res.success) {
-      overlay.remove();
-      router.navigate('siswa');
+  Modal.form(title, fields, async (formData) => {
+    const payload = { ...formData };
+    if (isEdit) {
+      const r = await siswaService.update(payload);
+      if (r.success) { showToast('Siswa berhasil diupdate', 'success'); siswaReload(); return true; }
+      else { showToast('Gagal: ' + (r.message || ''), 'error'); return false; }
     } else {
-      showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
+      const r = await siswaService.create(payload);
+      if (r.success) { showToast('Siswa berhasil ditambahkan', 'success'); siswaReload(); return true; }
+      else { showToast('Gagal: ' + (r.message || ''), 'error'); return false; }
     }
   });
-}
-
-async function deleteSiswa(nis) {
-  if (!confirm('Yakin hapus siswa dengan NIS ' + nis + '?')) return;
-  const res = await api.deleteSiswa(nis);
-  if (res.success) router.navigate('siswa');
-  else showToast('Gagal: ' + (res.message || 'Terjadi kesalahan'), 'error');
 }

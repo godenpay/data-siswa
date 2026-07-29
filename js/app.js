@@ -9,7 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
   router.init();
 });
 
-/* Close sidebar on Escape key */
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSidebar();
+});
+
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.error || e.message);
 });

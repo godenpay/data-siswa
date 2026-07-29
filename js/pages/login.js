@@ -10,15 +10,15 @@ router.register('login', async () => {
     <div class="login-page">
       <div class="login-card">
         <div class="login-logo">
-          <img src="logo/logo.png" alt="Logo" onerror="this.style.display='none'">
+          <img src="logo/logo.png" alt="Logo Sekolah" onerror="this.style.display='none'">
         </div>
         <h1>${APP_CONFIG.APP_NAME}</h1>
         <p class="login-subtitle">Sistem Informasi Data Siswa</p>
         <div id="loginAlert"></div>
-        <form id="loginForm">
+        <form id="loginForm" autocomplete="off">
           <div class="form-group">
             <label>Username</label>
-            <input type="text" class="form-control" id="loginUsername" placeholder="Masukkan username" required>
+            <input type="text" class="form-control" id="loginUsername" placeholder="Masukkan username" required autofocus>
           </div>
           <div class="form-group">
             <label>Password</label>
@@ -40,7 +40,9 @@ router.register('login', async () => {
       auth.login(res.user);
       router.navigate('dashboard');
     } else {
-      alertDiv.innerHTML = `<div class="alert alert-danger">${res.message || 'Login gagal'}</div>`;
+      alertDiv.innerHTML = `<div class="alert alert-danger">${res.message || 'Login gagal. Periksa username dan password.'}</div>`;
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
     }
   });
 });
