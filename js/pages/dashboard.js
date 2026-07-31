@@ -63,7 +63,7 @@ router.register('dashboard', async () => {
           <div class="card-title">Selamat Datang, ${escapeHtml(user.nama)}</div>
           <span class="badge badge-primary">Administrator</span>
         </div>
-        <p>Kelola seluruh data siswa, absensi, raport, dan izin melalui menu di sidebar atau quick actions di bawah.</p>
+        <p>Kelola seluruh data siswa, absensi, raport, dan izin melalui menu di atas atau quick actions di bawah.</p>
       </div>
       <div class="card">
         <div class="card-header">
@@ -83,7 +83,7 @@ router.register('dashboard', async () => {
           <div class="card-title">Selamat Datang, ${escapeHtml(user.nama)}</div>
           <span class="badge badge-info">Siswa</span>
         </div>
-        <p>Lihat data diri, absensi, raport, dan izin kamu melalui menu di sidebar.</p>
+        <p>Lihat data diri, absensi, raport, dan izin kamu melalui menu di atas.</p>
       </div>
       <div class="quick-actions">
         <a href="#" onclick="router.navigate('absensi')" class="btn btn-success">&#9745; Absensi Saya</a>
@@ -97,7 +97,7 @@ router.register('dashboard', async () => {
           <div class="card-title">Selamat Datang, ${escapeHtml(user.nama)}</div>
           <span class="badge badge-success">Orang Tua</span>
         </div>
-        <p>Pantau perkembangan anak melalui menu di sidebar.</p>
+        <p>Pantau perkembangan anak melalui menu di atas.</p>
       </div>
       <div class="quick-actions">
         <a href="#" onclick="router.navigate('absensi')" class="btn btn-success">&#9745; Absensi Anak</a>

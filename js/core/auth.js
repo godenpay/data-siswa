@@ -54,36 +54,12 @@ const auth = {
     return labels[role] || role;
   },
 
-  getInitials(name) {
-    if (!name) return '?';
-    const words = name.trim().split(/\s+/);
-    if (words.length >= 2) return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-    return name[0].toUpperCase();
-  },
-
   renderUI(role) {
-    const user = this.getUser();
-    const sidebar = document.getElementById('sidebar');
     const navbar = document.getElementById('navbar');
-    const bottomNav = document.getElementById('bottomNav');
-
-    if (!sidebar) return;
-
-    sidebar.classList.remove('hidden');
+    if (!navbar) return;
     navbar.classList.remove('hidden');
-    if (bottomNav) bottomNav.classList.remove('hidden');
 
-    const initials = this.getInitials(user?.nama);
-    const name = user?.nama || 'User';
-    const roleLabel = this.getRoleLabel(role);
-
-    const els = ['sidebarAvatar', 'navUserAvatar'];
-    els.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = initials; });
-
-    ['sidebarUserName', 'navUserName'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = name; });
-    ['sidebarUserRole', 'navUserRole'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = roleLabel; });
-
-    document.querySelectorAll('.nav-link[data-role], .bottom-nav-link[data-role]').forEach(link => {
+    document.querySelectorAll('.nav-menu a[data-role]').forEach(link => {
       const allowed = link.getAttribute('data-role');
       if (!role) { link.classList.add('hidden'); return; }
       if (allowed === 'all' || allowed.split(',').includes(role)) {
@@ -95,36 +71,24 @@ const auth = {
   },
 
   hideAll() {
-    const ids = ['sidebar', 'navbar', 'bottomNav'];
-    ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+    const navbar = document.getElementById('navbar');
+    if (navbar) navbar.classList.add('hidden');
   },
 
   highlightNav(page) {
-    document.querySelectorAll('.nav-link, .bottom-nav-link').forEach(l => l.classList.remove('active'));
-    const sel = `.nav-link[data-page="${page}"], .bottom-nav-link[data-bn-page="${page}"]`;
-    document.querySelectorAll(sel).forEach(l => l.classList.add('active'));
-
-    const bc = document.getElementById('breadcrumbCurrent');
-    if (bc) {
-      const labels = { dashboard: 'Dashboard', siswa: 'Data Siswa', absensi: 'Absensi', raport: 'Raport', ijin: 'Izin / Sakit', admin: 'Admin Panel' };
-      bc.textContent = labels[page] || page.charAt(0).toUpperCase() + page.slice(1);
-    }
-
+    document.querySelectorAll('.nav-menu a').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector('.nav-menu a[data-page="' + page + '"]');
+    if (link) link.classList.add('active');
     closeSidebar();
   },
 };
 
 function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  if (!sidebar) return;
-  sidebar.classList.toggle('open');
-  if (overlay) overlay.classList.toggle('hidden');
+  const menu = document.getElementById('navMenu');
+  if (menu) menu.classList.toggle('show');
 }
 
 function closeSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  if (sidebar) sidebar.classList.remove('open');
-  if (overlay) overlay.classList.add('hidden');
+  const menu = document.getElementById('navMenu');
+  if (menu) menu.classList.remove('show');
 }
