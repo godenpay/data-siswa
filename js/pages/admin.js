@@ -50,6 +50,11 @@ router.register('admin', async () => {
     actions: [
       { key: 'edit', label: 'Edit', cls: 'btn-warning', handler: (row) => adminEditUser(row.id) },
       { key: 'del', label: 'Hapus', cls: 'btn-danger', handler: async (row) => {
+        const me = auth.getUser();
+        if (me && String(me.id) === String(row.id) && row.role === 'admin') {
+          showToast('Tidak dapat menghapus akun yang sedang digunakan', 'warning');
+          return;
+        }
         if (await Modal.confirm('Yakin hapus pengguna <b>' + escapeHtml(row.nama) + '</b>?')) {
           const r = await userService.remove(row.id);
           if (r.success) { showToast('Pengguna dihapus', 'success'); adminReloadUsers(); }
@@ -103,7 +108,7 @@ function adminAddUser() {
 }
 
 function adminEditUser(id) {
-  const data = adminUsersData.find(r => r.id === id);
+  const data = adminUsersData.find(r => String(r.id) === String(id));
   if (data) adminUserForm('Edit Pengguna', data);
 }
 
@@ -143,7 +148,7 @@ function adminAddKelas() {
 }
 
 function adminEditKelas(id) {
-  const data = adminKelasData.find(r => r.id === id);
+  const data = adminKelasData.find(r => String(r.id) === String(id));
   if (data) adminKelasForm('Edit Kelas', data);
 }
 

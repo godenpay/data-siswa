@@ -12,7 +12,7 @@ const nilaiService = {
   },
 
   async remove(id) {
-    return baseService.remove('nilai', 'deleteNilai', { id });
+    return baseService.remove('nilai', 'deleteNilai', id);
   },
 
   invalidate() { baseService.invalidate('nilai'); }

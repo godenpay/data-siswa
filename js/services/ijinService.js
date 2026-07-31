@@ -12,7 +12,7 @@ const ijinService = {
   },
 
   async remove(id) {
-    return baseService.remove('ijin', 'deleteIjin', { id });
+    return baseService.remove('ijin', 'deleteIjin', id);
   },
 
   async approve(id, adminName) {

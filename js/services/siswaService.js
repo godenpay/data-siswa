@@ -18,7 +18,7 @@ const siswaService = {
   },
 
   async remove(nis) {
-    return baseService.remove('siswa', 'deleteSiswa', { nis });
+    return baseService.remove('siswa', 'deleteSiswa', nis);
   },
 
   invalidate() { baseService.invalidate('siswa'); }

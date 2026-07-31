@@ -28,6 +28,22 @@ class DataTable {
     this.init();
   }
 
+  _rowId(row) {
+    if (row == null) return '';
+    if (row.id != null) return String(row.id);
+    if (row.nis != null) return String(row.nis);
+    return JSON.stringify(row);
+  }
+
+  _escAttr(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
   init() {
     this.applyFilters();
     this.render();
@@ -119,14 +135,14 @@ class DataTable {
   }
 
   toggleSelect(id) {
-    if (this.selected.has(id)) this.selected.delete(id);
-    else this.selected.add(id);
+    if (this.selected.has(String(id))) this.selected.delete(String(id));
+    else this.selected.add(String(id));
     this.render();
   }
 
   selectAll() {
-    const allIds = this.pageData.map(r => r.id || r.nis || JSON.stringify(r));
-    const allSelected = allIds.every(id => this.selected.has(id));
+    const allIds = this.pageData.map(r => this._rowId(r));
+    const allSelected = allIds.length > 0 && allIds.every(id => this.selected.has(id));
     if (allSelected) allIds.forEach(id => this.selected.delete(id));
     else allIds.forEach(id => this.selected.add(id));
     this.render();
@@ -204,7 +220,7 @@ class DataTable {
     html += '<div class="table-container"><table>';
     html += '<thead><tr>';
     if (this.selectable) {
-      const allSelected = this.pageData.every(r => this.selected.has(r.id || r.nis || JSON.stringify(r)));
+      const allSelected = this.pageData.length > 0 && this.pageData.every(r => this.selected.has(this._rowId(r)));
       html += `<th class="col-check"><input type="checkbox" ${allSelected ? 'checked' : ''} onchange="document.getElementById('${this.id}').__dt.selectAll()"></th>`;
     }
     this.columns.forEach(col => {
@@ -219,10 +235,11 @@ class DataTable {
       html += `<tr><td colspan="${this.columns.length + (this.selectable ? 1 : 0) + (this.actions ? 1 : 0)}" class="empty-cell"><div class="empty-state"><div class="empty-state-icon">&#128196;</div><div class="empty-state-title">${this.emptyMessage}</div></div></td></tr>`;
     } else {
       this.pageData.forEach(row => {
-        const rowId = row.id || row.nis || JSON.stringify(row);
-        html += '<tr' + (this.onRowClick ? ' style="cursor:pointer" onclick="document.getElementById(\'' + this.id + '\').__dt.rowClick(\'' + escapeHtml(String(rowId)) + '\')"' : '') + '>';
+        const rowId = this._rowId(row);
+        const escId = this._escAttr(rowId);
+        html += '<tr' + (this.onRowClick ? ' style="cursor:pointer" onclick="document.getElementById(\'' + this.id + '\').__dt.rowClick(\'' + escId + '\')"' : '') + '>';
         if (this.selectable) {
-          html += `<td class="col-check"><input type="checkbox" ${this.selected.has(rowId) ? 'checked' : ''} onchange="document.getElementById('${this.id}').__dt.toggleSelect('${escapeHtml(String(rowId))}')"></td>`;
+          html += `<td class="col-check"><input type="checkbox" ${this.selected.has(rowId) ? 'checked' : ''} onchange="document.getElementById('${this.id}').__dt.toggleSelect('${escId}')"></td>`;
         }
         this.columns.forEach(col => {
           let val = row[col.key];
@@ -235,7 +252,7 @@ class DataTable {
           this.actions.forEach(btn => {
             const show = !btn.show || btn.show(row);
             if (show) {
-              actionsHtml += `<button class="btn btn-sm ${btn.cls || 'btn-ghost'}" onclick="event.stopPropagation(); document.getElementById('${this.id}').__dt.actionExec('${btn.key}', '${escapeHtml(String(rowId))}')">${btn.label}</button>`;
+              actionsHtml += `<button class="btn btn-sm ${btn.cls || 'btn-ghost'}" onclick="event.stopPropagation(); document.getElementById('${this.id}').__dt.actionExec('${btn.key}', '${escId}')">${btn.label}</button>`;
             }
           });
           actionsHtml += '</div>';
@@ -298,8 +315,13 @@ class DataTable {
     return range;
   }
 
+  _findRow(rowId) {
+    const id = String(rowId);
+    return this.filteredData.find(r => this._rowId(r) === id);
+  }
+
   actionExec(key, rowId) {
-    const row = this.filteredData.find(r => (r.id || r.nis || JSON.stringify(r)) === rowId);
+    const row = this._findRow(rowId);
     if (row && this.actions) {
       const btn = this.actions.find(a => a.key === key);
       if (btn && btn.handler) btn.handler(row);
@@ -310,7 +332,7 @@ class DataTable {
     if (this.bulkActions) {
       const btn = this.bulkActions.find(b => b.key === key);
       if (btn && btn.handler) {
-        const selectedRows = this.filteredData.filter(r => this.selected.has(r.id || r.nis || JSON.stringify(r)));
+        const selectedRows = this.filteredData.filter(r => this.selected.has(this._rowId(r)));
         btn.handler(selectedRows);
       }
     }
@@ -318,7 +340,7 @@ class DataTable {
 
   rowClick(rowId) {
     if (this.onRowClick) {
-      const row = this.filteredData.find(r => (r.id || r.nis || JSON.stringify(r)) === rowId);
+      const row = this._findRow(rowId);
       if (row) this.onRowClick(row);
     }
   }

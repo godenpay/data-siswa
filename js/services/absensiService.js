@@ -12,7 +12,7 @@ const absensiService = {
   },
 
   async remove(id) {
-    return baseService.remove('absensi', 'deleteAbsensi', { id });
+    return baseService.remove('absensi', 'deleteAbsensi', id);
   },
 
   async bulkCreate(entries) {

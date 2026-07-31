@@ -12,7 +12,7 @@ const kelasService = {
   },
 
   async remove(id) {
-    return baseService.remove('kelas', 'deleteKelas', { id });
+    return baseService.remove('kelas', 'deleteKelas', id);
   },
 
   invalidate() { baseService.invalidate('kelas'); }

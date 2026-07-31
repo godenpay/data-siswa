@@ -12,7 +12,7 @@ const userService = {
   },
 
   async remove(id) {
-    return baseService.remove('user', 'deleteUser', { id });
+    return baseService.remove('user', 'deleteUser', id);
   },
 
   invalidate() { baseService.invalidate('user'); }
